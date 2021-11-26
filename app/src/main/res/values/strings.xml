@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="go_to_google_com">Go to google.com</string>
+    <string name="enter_value">Enter value</string>
+    <string name="send_to_infoactivity">Send to InfoActivity</string>
+    <string name="send_back">Send back</string>
+</resources>
