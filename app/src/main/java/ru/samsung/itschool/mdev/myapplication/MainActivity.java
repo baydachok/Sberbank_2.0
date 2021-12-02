@@ -12,55 +12,127 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener{
+    private Button btv;
+    private TextView tv5,tv2,tv3,tv4;
 
-    private Button btn, btn2;
-    private EditText ed;
-
+    public int startCap, timeCap, everyCap, procentCap, resultCap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btn = findViewById(R.id.button);
-        btn.setOnClickListener(this);
-        btn2 = findViewById(R.id.button2);
-        btn2.setOnClickListener(this);
-        ed = findViewById(R.id.editText);
+        btv = findViewById(R.id.button);
+        btv.setOnClickListener(this);
+
+        final SeekBar seekBar = (SeekBar)findViewById(R.id.seekBar);
+        seekBar.setOnSeekBarChangeListener(this);
+        final SeekBar seekBar2 = (SeekBar)findViewById(R.id.seekBar2);
+        seekBar2.setOnSeekBarChangeListener(this);
+        final SeekBar seekBar3 = (SeekBar)findViewById(R.id.seekBar3);
+        seekBar3.setOnSeekBarChangeListener(this);
+        final SeekBar seekBar4 = (SeekBar)findViewById(R.id.seekBar4);
+        seekBar4.setOnSeekBarChangeListener(this);
+
+        tv2 = findViewById(R.id.textView2);
+        tv3 = findViewById(R.id.textView3);
+        tv4 = findViewById(R.id.textView4);
+        tv5 = findViewById(R.id.textView5);
     }
 
-    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == InfoActivity.INFOACTIVITY_CODE) {
-                        ed.setText(result.getData().getStringExtra("ppp"));
-                    }
-                }
-            });
+
 
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.button) {
-            String url = "https://google.com";
-            // Переменная типа Intent (намерение)
-            // Неявное намерение
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(url));
-            startActivity(intent);
-            // 1. Попробуйте открыть камеру
-            // 2. Попробуйте открыть карты
-            // 3. Попробуйте открыть вызов телефона
-            // 4*. Открыть камеру и получить от нее фото. Показать в ImageView
-        } else {
-            // переход на другую активность и передача данных
-            // Явное намерение
             Intent intent = new Intent(getApplicationContext(),InfoActivity.class);
-            intent.putExtra("ccc",ed.getText().toString());
+            resultCap = startCap;
+            for(int i = 0; i<timeCap; i++){
+                resultCap += everyCap*12;
+                resultCap += resultCap*procentCap;
+            }
+            String resultCap1 = Integer.toString(resultCap);
+
+            intent.putExtra("ccc",resultCap1);
             //startActivity(intent); // его вызывают, когда мы не ждем данные обратно
             //startActivityForResult(intent,);
-            someActivityResultLauncher.launch(intent);
+            startActivity(intent);
+        }
+
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(seekBar.getId()==R.id.seekBar) {
+            int temp;
+            StringBuilder temp2 = new StringBuilder("Сумма при открытии счета: ");
+            temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (progress ==0) temp= 1;
+            temp2.append(temp*12000);
+            temp2.append(" рублей");
+            tv2.setText(temp2);
+
+        } else if(seekBar.getId()==R.id.seekBar2) {
+            int temp;
+            StringBuilder temp2 = new StringBuilder("На срок: ");
+            temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (progress == 0) temp = 1;
+            temp2.append(temp);
+            if (temp == 1){
+                temp2.append(" год");
+            }
+            else if (temp <5){
+                temp2.append(" года");
+            }
+            else temp2.append(" лет");
+            tv3.setText(temp2);
+
+        } else if(seekBar.getId()==R.id.seekBar3) {
+            int temp;
+            StringBuilder temp2 = new StringBuilder("Ежемесячное пополнение: ");
+            temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (progress ==0) temp= 1;
+            temp2.append(temp*3000);
+            temp2.append(" рублей");
+            tv4.setText(temp2);
+
+
+        } else if(seekBar.getId()==R.id.seekBar4) {
+            int temp;
+            StringBuilder temp2 = new StringBuilder("Ставка в год: ");
+            temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (progress ==0) temp= 1;
+            temp2.append(temp);
+            temp2.append("%");
+            tv5.setText(temp2);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        if (seekBar.getId() == R.id.seekBar) {
+            int temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (temp == 0) temp = 1;
+            startCap = temp * 12000;
+        } else if (seekBar.getId() == R.id.seekBar2) {
+            int temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (temp == 0) temp = 1;
+            timeCap = temp;
+        } else if(seekBar.getId()==R.id.seekBar3) {
+            int temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (temp == 0) temp = 1;
+            everyCap = temp;
+        } else if(seekBar.getId()==R.id.seekBar4) {
+            int temp = Integer.parseInt((String.valueOf(seekBar.getProgress())));
+            if (temp == 0) temp = 1;
+            procentCap = temp;
         }
     }
 }
